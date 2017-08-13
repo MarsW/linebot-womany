@@ -74,16 +74,29 @@ def handle_text_message(event):                  # default
     # 針對使用者各種訊息的回覆 End =========
 
 # 接收位置資訊 ----------------------------------------
+import requests
+import json
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_location_message(event):
     now_lat=event.message.latitude
     now_lng=event.message.longitude
     
-    reply = "現在位置：緯度{},經度{}".format(now_lat,now_lng)
-
+    url = "https://maps.googleapis.com/maps/api/place/search/json?location={},{}&rankby=distance&types=police&key=你的金鑰&language=zh-TW".format(now_lat,now_lng)
+    rep = requests.get(url)
+    html = rep.text
+    data = json.loads(html)
+    first = data['results'][0]
+    title = first['name']
+    print (title)
+    address = first['vicinity']
+    lat = first['geometry']['location']["lat"]
+    lng = first['geometry']['location']["lng"]
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=reply)
+        LocationSendMessage(
+            title=title, address=address,
+            latitude=lat, longitude=lng
+        )
     )
 
 # ================= 機器人區塊 End =================
