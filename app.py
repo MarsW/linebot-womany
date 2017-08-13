@@ -9,6 +9,7 @@ from linebot.exceptions import (
 )
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
+    LocationMessage, LocationSendMessage,
 )
 
 app = Flask(__name__)
@@ -40,11 +41,12 @@ def callback():
 
 # ================= 機器人區塊 Start =================
 import random
+# 接收文字訊息 ----------------------------------------
 @handler.add(MessageEvent, message=TextMessage)  # default
 def handle_text_message(event):                  # default
     msg = event.message.text #message from user
     # msg=input("msg=")         #input()是在terminal/cmd鍵盤輸入的，這裡是用line傳進來的
-    
+
     # 針對使用者各種訊息的回覆 Start =========
     reply = ""
     
@@ -71,6 +73,18 @@ def handle_text_message(event):                  # default
 
     # 針對使用者各種訊息的回覆 End =========
 
+# 接收位置資訊 ----------------------------------------
+@handler.add(MessageEvent, message=LocationMessage)
+def handle_location_message(event):
+    now_lat=event.message.latitude
+    now_lng=event.message.longitude
+    
+    reply = "現在位置：緯度{},經度{}".format(now_lat,now_lng)
+
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=reply)
+    )
 
 # ================= 機器人區塊 End =================
 
