@@ -39,17 +39,38 @@ def callback():
     return 'OK'
 
 # ================= 機器人區塊 Start =================
+import random
 @handler.add(MessageEvent, message=TextMessage)  # default
 def handle_text_message(event):                  # default
     msg = event.message.text #message from user
-
+    # msg=input("msg=")         #input()是在terminal/cmd鍵盤輸入的，這裡是用line傳進來的
+    
     # 針對使用者各種訊息的回覆 Start =========
+    reply = ""
+    
+    keyword_list = ["心情不好","給個鼓勵"]
+    good_list = [
+                    "一個人走得快，一群人走得遠",
+                    "我們也是一群會想放棄的凡人，唯一的差別是，最後我們選擇走下去"
+                ]
+    if msg in keyword_list:
+        index = random.randint(0,len(good_list)-1)
+        print(good_list[index]) #print會印在Heroku log中，不會在line出現
+        reply = good_list[index]
+    elif msg=="我很滿意你的服務":
+        print("希望你有愉快的一天")
+        reply = "希望你有愉快的一天"
+    else:
+        print("我聽不懂你在說什麼！")
+        reply = "我聽不懂你在說什麼！"
+
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=msg)
+        TextSendMessage(text=reply)
     )
 
     # 針對使用者各種訊息的回覆 End =========
+
 
 # ================= 機器人區塊 End =================
 
